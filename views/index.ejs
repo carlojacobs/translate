@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>English to Hindi Translation</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+	<nav class="navbar is-success" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item is-bold" href="#">
+				English to Hindi Translation!
+			</a>
+		</div>
+	</nav>
+	<section class="section">
+		<div class="columns container">
+			<div class="column is-two-thirds">
+				<div class="">
+					<h1 class="title">
+						English to Hindi Translation on Demand!
+					</h1>
+					<p class="subtitle">
+						Translate English to <strong>Hindi</strong>!
+					</p>
+				</div>
+				<br>
+				<div class="">
+					<progress id="progress" class="progress is-success" max="100">15%</progress>
+					<div class="columns">
+						<div class="column">
+							<div class="field">
+								<div class="control">
+									<textarea id="inputTextArea" class="textarea is-medium is-success" placeholder="Type some English..."></textarea>
+									<p id="charCount2" >Character count: 0</p>
+									<p id="wordCount2" >Word count: 0</p>
+								</div>
+							</div>
+						</div>
+						<div class="column">
+							<div class="field">
+								<div class="control">
+									<textarea id="outputTextArea" class="textarea is-medium is-success" placeholder="Hindi Translation!"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<button id="translatebutton" class="button is-success is-medium">Translate!</button>
+					<button id="downloadButton" class="button is-success is-medium is-inverted">Download Translation</button>
+					<button id="copyButton" class="button is-success is-medium is-inverted">Copy to Clipboard</button>
+					<br>
+					<br>
+					<br>
+					<hr>
+					<br>
+					<br>
+					<p class="subtitle">
+						Or type English, get <strong>Hindi</strong>!
+					</p>
+					<div class="field">
+						<div class="control">
+							<textarea id="realTimeTextArea" class="textarea is-medium is-success" placeholder="Real time hindi translation! Get Hindi as you type."></textarea>
+							<p id="charCount" >Character count: 0</p>
+							<p id="wordCount" >Word count: 0</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="column is-one-third">
+				<article class="message is-success">
+					<div class="message-header">
+						<p>Some content</p>
+					</div>
+					<div class="message-body">
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
+					</div>
+				</article>
+				<article class="message is-success">
+					<div class="message-header">
+						<p>Some other content</p>
+					</div>
+					<div class="message-body">
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
+					</div>
+				</article>
+			</div>
+		</div>
+	</section>
+	<footer class="footer">
+		<div class="content has-text-centered is-success">
+			<p>
+				<strong>English to Hindi Translation</strong> by <a href="#">Kanishk Dhamija</a>. The source code is licensed
+				<a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+				is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+			</p>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		function sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+
+		const getTranslation = (term, target, key) => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					var url = "http://localhost:3000/translate/" + term;
+					fetch(url).then(res => {
+						res.json().then(data => {
+							console.log(data.result);
+							resolve(data.result);
+						});
+					}).catch(err => console.log(err));
+				});
+
+			});
+		}
+		const translate = () => {
+			$("#progress").show();
+			var inputTextArea = $("#inputTextArea");
+			var outputTextArea = $("#outputTextArea");
+			var inputText = inputTextArea.val();
+			var term = inputText;
+			if (term !== "") {
+				console.log("TERM: ", term);
+				getTranslation(term, 'hi', "TEST").then(res => {
+					outputTextArea.val(res);
+					$("#progress").hide();
+				}).catch(err => console.log(err));
+			}
+		}
+		const realtTimeTranslate = () => {
+			var inputText = $("#realTimeTextArea").val();
+			if (inputText == "") {
+				$("#realTimeTextArea").val("");
+			} else {
+				console.log("INPUT: ", inputText);
+				getTranslation(inputText).then(res => {
+					console.log(res);
+					$("#realTimeTextArea").val(res);
+
+				}).catch(err => console.log(err));
+			}
+		}
+
+		function saveTextAsFile(textToWrite, fileNameToSaveAs) {
+			var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'}); 
+			var downloadLink = document.createElement("a");
+			downloadLink.download = fileNameToSaveAs;
+			downloadLink.innerHTML = "Download File";
+			if (window.webkitURL != null)
+			{
+				downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+			}
+			else
+			{
+				downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+				downloadLink.onclick = destroyClickedElement;
+				downloadLink.style.display = "none";
+				document.body.appendChild(downloadLink);
+			}
+
+			downloadLink.click();
+		}
+		$(document).ready(function(){
+			$(document).data('length', 0);
+			$("#progress").hide();
+			$("#translatebutton").click(translate);
+			var realTimeTextArea = $("#realTimeTextArea");
+			$("#realTimeTextArea").keydown(function (e) {
+				$("#charCount").text(`Character count: ${$("#realTimeTextArea").val().split("").length}`);
+				$("#wordCount").text(`Word count: ${$("#realTimeTextArea").val().split(" ").length}`);
+			});
+			$("#inputTextArea").keydown(function (e) {
+				$("#charCount2").text(`Character count: ${$("#inputTextArea").val().split("").length}`);
+				$("#wordCount2").text(`Word count: ${$("#inputTextArea").val().split(" ").length}`);
+			});
+			$("#downloadButton").click(() => {
+				saveTextAsFile($("#outputTextArea").val(), "document.txt");
+			});
+			$("#copyButton").click(() => {
+				$("#outputTextArea").select();
+				document.execCommand('copy');
+				alert("Copied to clipboard!");
+			});
+
+			var typingTimer;
+			var doneTypingInterval = 700;
+			var $input = $('#realTimeTextArea');
+
+			$input.on('keyup', function () {
+				clearTimeout(typingTimer);
+				typingTimer = setTimeout(doneTyping, doneTypingInterval);
+			});
+
+			$input.on('keydown', function () {
+				clearTimeout(typingTimer);
+			});
+
+			function doneTyping () {
+				realtTimeTranslate();
+			}
+		});
+</script>
+</body>
+</html>
